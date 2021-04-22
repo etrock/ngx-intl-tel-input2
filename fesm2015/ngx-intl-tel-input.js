@@ -1608,6 +1608,7 @@ const phoneNumberValidator = (control) => {
     }
     // Find <input> inside injected nativeElement and get its "id".
     const el = control.nativeElement;
+    const countryCode = el === null || el === void 0 ? void 0 : el.getAttribute('ng-reflect-selected-country-i-s-o');
     const inputBox = el
         ? el.querySelector('input[type="tel"]')
         : undefined;
@@ -1620,7 +1621,7 @@ const phoneNumberValidator = (control) => {
             inputBox.setCustomValidity('Invalid field.');
             let number;
             try {
-                number = PhoneNumberUtil.getInstance().parse(control.value.number, control.value.countryCode);
+                number = PhoneNumberUtil.getInstance().parse(control.value, countryCode);
             }
             catch (e) {
                 if (isRequired === true) {
@@ -1635,7 +1636,7 @@ const phoneNumberValidator = (control) => {
                     return error;
                 }
                 else {
-                    if (!PhoneNumberUtil.getInstance().isValidNumberForRegion(number, control.value.countryCode)) {
+                    if (!PhoneNumberUtil.getInstance().isValidNumberForRegion(number, countryCode)) {
                         return error;
                     }
                     else {
@@ -1822,15 +1823,18 @@ class NgxIntlTelInputComponent {
         this.checkSeparateDialCodeStyle();
     }
     onPhoneNumberChange() {
-        let countryCode;
+        //let countryCode: string | undefined;
         // Handle the case where the user sets the value programatically based on a persisted ChangeData obj.
+        /*
         if (this.phoneNumber && typeof this.phoneNumber === 'object') {
-            const numberObj = this.phoneNumber;
+            const numberObj: ChangeData = this.phoneNumber;
+            
             this.phoneNumber = numberObj.number;
             countryCode = numberObj.countryCode;
         }
+        */
         this.value = this.phoneNumber;
-        countryCode = countryCode || this.selectedCountry.iso2.toUpperCase();
+        let countryCode = this.selectedCountry.iso2.toUpperCase();
         let number;
         try {
             number = this.phoneUtil.parse(this.phoneNumber, countryCode);
@@ -1864,22 +1868,10 @@ class NgxIntlTelInputComponent {
                 : '';
             // parse phoneNumber if separate dial code is needed
             if (this.separateDialCode && intlNo) {
+                this.phoneNumber = this.removeDialCode(intlNo);
                 this.value = this.removeDialCode(intlNo);
             }
             this.propagateChange(intlNo);
-            /*
-            ({
-                number: this.value,
-                internationalNumber: intlNo,
-                nationalNumber: number
-                    ? this.phoneUtil.format(number, lpn.PhoneNumberFormat.NATIONAL)
-                    : '',
-                e164Number: number
-                    ? this.phoneUtil.format(number, lpn.PhoneNumberFormat.E164)
-                    : '',
-                countryCode: countryCode.toUpperCase(),
-                dialCode: '+' + this.selectedCountry.dialCode,
-            });*/
         }
     }
     onCountrySelect(country, el) {
@@ -1900,20 +1892,6 @@ class NgxIntlTelInputComponent {
                 this.value = this.removeDialCode(intlNo);
             }
             this.propagateChange(intlNo);
-            /*
-            ({
-                number: this.value,
-                internationalNumber: intlNo,
-                nationalNumber: number
-                    ? this.phoneUtil.format(number, lpn.PhoneNumberFormat.NATIONAL)
-                    : '',
-                e164Number: number
-                    ? this.phoneUtil.format(number, lpn.PhoneNumberFormat.E164)
-                    : '',
-                countryCode: this.selectedCountry.iso2.toUpperCase(),
-                dialCode: '+' + this.selectedCountry.dialCode,
-            });
-            */
         }
         else {
             // Reason: avoid https://stackoverflow.com/a/54358133/1617590

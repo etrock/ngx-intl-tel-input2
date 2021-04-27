@@ -1608,7 +1608,10 @@ const phoneNumberValidator = (control) => {
     }
     // Find <input> inside injected nativeElement and get its "id".
     const el = control.nativeElement;
-    const countryCode = el === null || el === void 0 ? void 0 : el.getAttribute('ng-reflect-selected-country-i-s-o');
+    // const countryCode = el?.getAttribute('ng-reflect-selected-country-i-s-o');
+    const dialCode = control.value.split(' ')[0].substring(1);
+    const allCountry = new CountryCode().allCountries;
+    const countryCode = allCountry.filter((code) => code[2] === dialCode)[0][1];
     const inputBox = el
         ? el.querySelector('input[type="tel"]')
         : undefined;

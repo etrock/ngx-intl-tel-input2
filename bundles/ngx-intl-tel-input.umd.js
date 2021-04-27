@@ -1601,7 +1601,10 @@
         }
         // Find <input> inside injected nativeElement and get its "id".
         var el = control.nativeElement;
-        var countryCode = el === null || el === void 0 ? void 0 : el.getAttribute('ng-reflect-selected-country-i-s-o');
+        // const countryCode = el?.getAttribute('ng-reflect-selected-country-i-s-o');
+        var dialCode = control.value.split(' ')[0].substring(1);
+        var allCountry = new CountryCode().allCountries;
+        var countryCode = allCountry.filter(function (code) { return code[2] === dialCode; })[0][1];
         var inputBox = el
             ? el.querySelector('input[type="tel"]')
             : undefined;

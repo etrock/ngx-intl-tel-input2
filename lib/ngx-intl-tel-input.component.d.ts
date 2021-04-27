@@ -25,6 +25,7 @@ export declare class NgxIntlTelInputComponent implements OnInit, OnChanges {
     separateDialCode: boolean;
     separateDialCodeClass: string;
     readonly countryChange: EventEmitter<Country>;
+    blurred: EventEmitter<any>;
     selectedCountry: Country;
     phoneNumber: string;
     allCountries: Array<Country>;
